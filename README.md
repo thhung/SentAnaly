@@ -11,6 +11,7 @@ The dataset for the first stage of this project is IMDb for the first stage. A d
 ## TODO List
 - [x] Setting up the baseline  
 - [x] Trying with different pretrained word embeddings
+- [x] Change the optimizer from Adam to Ranger (combination of Lookahead and RectAdam)
 - [ ] Adding Transformer
 - [ ] Applying for hate speech dataset
 - [ ] Fintuning and improving the model. 
