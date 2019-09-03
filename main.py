@@ -55,7 +55,29 @@ def main():
     vocab_size, embedding_dim = TEXT.vocab.vectors.shape
 
     class SentimentAnalysisCNN(nn.Module):
-        def __init__(self, vocab_size, embedding_dim, kernel_sizes, num_filters, num_classes, d_prob, mode):
+        def __init__(self, 
+                     vocab_size, 
+                     embedding_dim, 
+                     kernel_sizes, 
+                     num_filters, 
+                     num_classes, 
+                     d_prob, 
+                     mode, 
+                     use_drop=False):
+            """
+            Args:
+                vocab_size : int - size of vocabulary in dictionary
+                embedding_dim : int - the dimension of word embedding vector
+                kernel_sizes : list of int - sequence of sizes of kernels in this architecture
+                num_filters : how many filters used for each layers
+                num_classes : int - number of classes to classify
+                d_prob: probability for dropout layer
+                mode:  one of :
+                        static      : pretrained weights, non-trainable
+                        nonstatic   : pretrained weights, trainable
+                        rand        : random init weights
+                use_drop : use drop or not in this class
+            """
             super(SentimentAnalysisCNN, self).__init__()
             self.vocab_size = vocab_size
             self.embedding_dim = embedding_dim
@@ -70,7 +92,9 @@ def main():
                                                 out_channels=num_filters,
                                                 kernel_size=k, stride=1),
                                                 nn.Dropout(p=0.5, inplace=True)) for k in kernel_sizes])
-            # self.dropout = nn.Dropout(d_prob)
+            self.use_drop = use_drop
+            if self.use_drop:
+                self.dropout = nn.Dropout(d_prob)
             self.fc = nn.Linear(len(kernel_sizes) * num_filters, num_classes)
 
         def forward(self, x):
@@ -79,7 +103,8 @@ def main():
             x = [F.relu(conv(x)) for conv in self.conv]
             x = [F.max_pool1d(c, c.size(-1)).squeeze(dim=-1) for c in x]
             x = torch.cat(x, dim=1)
-            # x = self.fc(self.dropout(x))
+            if self.use_drop:
+                x = self.fc(self.dropout(x))
             x = self.fc(x)
             return torch.sigmoid(x).squeeze()
 
@@ -105,8 +130,12 @@ def main():
                     d_prob=0.5,
                     mode='static')
     model.to(device)
+    ## switch back and forth the two optimizers
     # optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-3)
+    
+    ## optimizer provide better performance but get overfitting quickly
     optimizer = Ranger(model.parameters(), weight_decay=0.1)
+    
     criterion = nn.BCELoss()
 
     def process_function(engine, batch):
