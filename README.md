@@ -1,3 +1,4 @@
+![](sentiment[1].png)
 # SentAnaly - Sentiment Analysis
 ## This project is in progress. 
 This project is my development for the Sentiment Analysis problem. This project composes of multiple stage:
