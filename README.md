@@ -1,7 +1,7 @@
 ![](sentiment[1].png)
 # SentAnaly - Sentiment Analysis
 ## This project is in progress. 
-This project is my development for the Sentiment Analysis problem. This project composes of multiple stage:
+This project is my development for the Sentiment Analysis problem. This project composes of multiple stages:
 
 1. First stage composes of experiments on various techniques from simple method such as purely DNN, Conv1D, different word embeddings to complicated one such as Transformer. The goal is to push the performance as high as possible.
 2. Second stage is applying all of these experiments for the real dataset.
